@@ -30,7 +30,6 @@ class Pipeline:
             output_folder_name = (audio_dump_path + '/' +
                                   audio_input_path.split('/')[-1] +
                                   '_vol_down_' + str(gain * -1))
-            print(output_folder_name)
             return output_folder_name
 
     def modify_volume(self, input_audio_path, gain, output_folder_path):
@@ -54,6 +53,16 @@ class Pipeline:
                                 audio.split('/')[-1])
             normalized_audio.export(output_file_name, format='wav')
 
+    def volume_augmentation(self, audio_dump_path, config_parameters, input_audio_path):
+        volume_gains = config_parameters['operations']['volume_gain']
+        for gain in tqdm(volume_gains):
+            output_folder_name = self.modified_volume_folder_name(input_audio_path, audio_dump_path, gain)
+            if os.path.isdir(output_folder_name):
+                print('Folder %s exists' % output_folder_name)
+                continue
+            os.makedirs(output_folder_name)
+            self.modify_volume(input_audio_path, gain, output_folder_name)
+
     def pipeline(self):
         config_parameters = self.read_yaml()
         input_audio_path = config_parameters['data']['audio_path']
@@ -62,18 +71,14 @@ class Pipeline:
         audio_dump_path = self.rectify_audio_path(audio_dump_path)
 
         if config_parameters['operations']['volume']:
-            volume_gains = config_parameters['operations']['volume_gain']
-            for gain in tqdm(volume_gains):
-                output_folder_name = self.modified_volume_folder_name(input_audio_path, audio_dump_path, gain)
-                if os.path.isdir(output_folder_name):
-                    print('Folder %s exists' % output_folder_name)
-                    continue
-                os.makedirs(output_folder_name)
-                self.modify_volume(input_audio_path, gain, output_folder_name)
+            self.volume_augmentation(audio_dump_path, config_parameters, input_audio_path)
 
         if config_parameters['operations']['loudness_normalization']:
             audio_path = config_parameters['data']['path_for_loudness_normalization']
             self.normalize_loudness(audio_path, audio_dump_path)
+
+        if config_parameters['operations']['add_background_noise']:
+            print('Adding Noise')
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ data:
   noise_probability: [0.3, 0.3, 0.3]
 
 operations:
-  volume: False
+  volume: True
   volume_gain: [-5, 5]
-  loudness_normalization: True
+  loudness_normalization: False
+  add_background_noise: True
