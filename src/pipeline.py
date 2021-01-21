@@ -65,6 +65,7 @@ class Pipeline:
 
     def check_background_noise_audios(self, config_parameters):
         noise_path = config_parameters['data']['background_noise_path']
+        probabilities = config_parameters['data']['noise_probabilities']
         noise_path = self.rectify_audio_path(noise_path)
         if not os.path.isdir(noise_path):
             print("Error: Incorrect path for background noises. Folder does not exist")
@@ -79,6 +80,9 @@ class Pipeline:
             print('Noise audios found in specified path')
         if flag == 0:
             print('Error: Noise not found in specified path')
+            exit()
+        if sum(probabilities) < 0.9:
+            print("Error: Sum of noise weights should be close to 1 ")
             exit()
 
     def pipeline(self):
@@ -100,6 +104,7 @@ class Pipeline:
         if config_parameters['operations']['add_background_noise']:
             self.check_background_noise_audios(config_parameters)
             print('Adding Noise')
+
 
 
 if __name__ == "__main__":

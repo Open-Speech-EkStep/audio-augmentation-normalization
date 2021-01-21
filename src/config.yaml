@@ -3,8 +3,8 @@ data:
   audio_dump_path: '../data/sample_data/'
   path_for_loudness_normalization: '../data/sample_data/vakyansh_sample'
   background_noise_path: 'background_noise/'
-  background_noises: ['normalized_pin_noise.wav', 'normalized_restaurant_noise.wav', 'normalized_traffic_noise.wav']
-  noise_probability: [0.3, 0.3, 0.3]
+  background_noises: ['normalized_pink_noise.wav', 'normalized_restaurant_noise.wav', 'normalized_traffic_noise.wav']
+  noise_probabilities: [0.33, 0.33, 0.33]
 
 operations:
   volume: False

@@ -1,4 +1,5 @@
 from pydub import AudioSegment
+import numpy as np
 
 
 class AudioAugmentation:
@@ -11,6 +12,19 @@ class AudioAugmentation:
         vol_modified_audio_file = wav_file + gain
 
         return vol_modified_audio_file
+
+    def overlay_noise_on_audio(self, noise_file_path):
+        wav_file = AudioSegment.from_file(file=self.audio_file,
+                                          format='wav')
+        noise = AudioSegment.from_file(file=noise_file_path,
+                                       format='wav')
+        wav_duration = wav_file.duration_seconds
+        noise_duration = noise.duration_seconds
+        start_time = np.random.choice(np.arange(0, int(noise_duration - wav_duration)))
+        end_time = start_time + wav_duration
+        clipped_noise = noise[start_time*1000: end_time*1000]
+        mixed_audio = wav_file.overlay(clipped_noise)
+        return mixed_audio
 
     def save_audio_file(self, audio, file_path):
         audio.export(out_f=file_path,
