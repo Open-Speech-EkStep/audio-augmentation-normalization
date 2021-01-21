@@ -1,0 +1,10 @@
+data:
+  audio_path: '../data/sample_data/vakyansh_sample'
+  audio_dump_path: '../data/sample_data/'
+  path_for_loudness_normalization: '../data/sample_data/vakyansh_sample_vol_down_5'
+  background_noise_path: 'background_noise'
+
+operations:
+  volume: True
+  volume_gain: [-30, -25, -20, -15, -10, -5, 5, 10, 15, 20, 25, 30]
+  loudness_normalization: False
