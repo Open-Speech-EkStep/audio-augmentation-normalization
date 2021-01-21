@@ -2,12 +2,12 @@ data:
   audio_path: '../data/sample_data/vakyansh_sample'
   audio_dump_path: '../data/sample_data/'
   path_for_loudness_normalization: '../data/sample_data/vakyansh_sample'
-  background_noise_path: 'background_noise'
-  background_noises: ['normalized_pink_noise.wav', 'normalized_restaurant_noise.wav', 'normalized_traffic_noise.wav']
+  background_noise_path: 'background_noise/'
+  background_noises: ['normalized_pin_noise.wav', 'normalized_restaurant_noise.wav', 'normalized_traffic_noise.wav']
   noise_probability: [0.3, 0.3, 0.3]
 
 operations:
-  volume: True
+  volume: False
   volume_gain: [-5, 5]
   loudness_normalization: False
   add_background_noise: True

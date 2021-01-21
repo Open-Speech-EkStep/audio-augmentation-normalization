@@ -12,7 +12,7 @@ class Pipeline:
 
     def read_yaml(self):
         with open(self.yaml_file) as f:
-            data = yaml.load(f)
+            data = yaml.load(f, Loader=yaml.FullLoader)
         return data
 
     def rectify_audio_path(self, path):
@@ -63,21 +63,42 @@ class Pipeline:
             os.makedirs(output_folder_name)
             self.modify_volume(input_audio_path, gain, output_folder_name)
 
+    def check_background_noise_audios(self, config_parameters):
+        noise_path = config_parameters['data']['background_noise_path']
+        noise_path = self.rectify_audio_path(noise_path)
+        if not os.path.isdir(noise_path):
+            print("Error: Incorrect path for background noises. Folder does not exist")
+            exit()
+        noise_files = glob.glob(noise_path + '/*.wav')
+        noise_files = [f.split('/')[-1] for f in noise_files]
+        config_noise = config_parameters['data']['background_noises']
+        flag = 0
+        if (set(config_noise) & set(noise_files)) == set(config_noise):
+            flag = 1
+        if flag:
+            print('Noise audios found in specified path')
+        if flag == 0:
+            print('Error: Noise not found in specified path')
+            exit()
+
     def pipeline(self):
         config_parameters = self.read_yaml()
         input_audio_path = config_parameters['data']['audio_path']
         audio_dump_path = config_parameters['data']['audio_dump_path']
-        input_audio_path =  self.rectify_audio_path(input_audio_path)
+        input_audio_path = self.rectify_audio_path(input_audio_path)
         audio_dump_path = self.rectify_audio_path(audio_dump_path)
 
         if config_parameters['operations']['volume']:
+            print("Augmenting Volume")
             self.volume_augmentation(audio_dump_path, config_parameters, input_audio_path)
 
         if config_parameters['operations']['loudness_normalization']:
+            print("Normalizing volume")
             audio_path = config_parameters['data']['path_for_loudness_normalization']
             self.normalize_loudness(audio_path, audio_dump_path)
 
         if config_parameters['operations']['add_background_noise']:
+            self.check_background_noise_audios(config_parameters)
             print('Adding Noise')
 
 
