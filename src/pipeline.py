@@ -106,6 +106,5 @@ class Pipeline:
             print('Adding Noise')
 
 
-
 if __name__ == "__main__":
     Pipeline('config.yaml').pipeline()
