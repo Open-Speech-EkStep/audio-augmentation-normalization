@@ -104,7 +104,7 @@ class Pipeline:
         if config_parameters['operations']['add_background_noise']:
             self.check_background_noise_audios(config_parameters)
             print('Adding Noise')
-
+            print('Background')
 
 if __name__ == "__main__":
     Pipeline('config.yaml').pipeline()
