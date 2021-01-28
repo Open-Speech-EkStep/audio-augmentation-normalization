@@ -16,7 +16,7 @@ class Pipeline:
         return data
 
     def rectify_audio_path(self, path):
-        if path[-1]=="/":
+        if path[-1] == "/":
             path = path[:-1]
         return path
 
@@ -89,15 +89,27 @@ class Pipeline:
         input_audio_path = self.rectify_audio_path(config_parameters['data']['audio_path'])
         audio_dump_path = self.rectify_audio_path(config_parameters['data']['audio_dump_path'])
         noise_path = self.rectify_audio_path(config_parameters['data']['background_noise_path'])
+        background_noise = config_parameters['data']['background_noises']
+        noise_probabilities = config_parameters['data']['noise_probabilities']
         audio_files = glob.glob(input_audio_path + '/*.wav')
         output_folder_path = audio_dump_path + '/' + input_audio_path.split('/')[-1] + '_noisy'
         if os.path.isdir(output_folder_path):
             print('Folder %s exists' % output_folder_path)
             exit()
         os.makedirs(output_folder_path)
-        print(input_audio_path)
-        print(len(audio_files))
-        
+
+        partitioned_files = [round(p * len(audio_files)) for p in noise_probabilities]
+        if sum(partitioned_files) != len(audio_files):
+            partitioned_files[-1] = len(audio_files) - sum(partitioned_files[:-1])
+
+        for i, number_files in tqdm(enumerate(partitioned_files)):
+            selected_audio_files = audio_files[:number_files]
+            for audio in selected_audio_files:
+                audio_with_noise = AudioAugmentation(audio).overlay_noise_on_audio(noise_path + '/' + background_noise[i])
+                output_file_name = (output_folder_path + '/' +
+                                    audio.split('/')[-1])
+                audio_with_noise.export(output_file_name, format='wav')
+            del audio_files[:number_files]
 
     def pipeline(self):
         config_parameters = self.read_yaml()
