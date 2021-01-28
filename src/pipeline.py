@@ -85,6 +85,20 @@ class Pipeline:
             print("Error: Sum of noise weights should be close to 1 ")
             exit()
 
+    def add_noise(self, config_parameters):
+        input_audio_path = self.rectify_audio_path(config_parameters['data']['audio_path'])
+        audio_dump_path = self.rectify_audio_path(config_parameters['data']['audio_dump_path'])
+        noise_path = self.rectify_audio_path(config_parameters['data']['background_noise_path'])
+        audio_files = glob.glob(input_audio_path + '/*.wav')
+        output_folder_path = audio_dump_path + '/' + input_audio_path.split('/')[-1] + '_noisy'
+        if os.path.isdir(output_folder_path):
+            print('Folder %s exists' % output_folder_path)
+            exit()
+        os.makedirs(output_folder_path)
+        print(input_audio_path)
+        print(len(audio_files))
+        
+
     def pipeline(self):
         config_parameters = self.read_yaml()
         input_audio_path = config_parameters['data']['audio_path']
@@ -104,6 +118,8 @@ class Pipeline:
         if config_parameters['operations']['add_background_noise']:
             self.check_background_noise_audios(config_parameters)
             print('Adding Noise')
+            self.add_noise(config_parameters)
+
 
 if __name__ == "__main__":
     Pipeline('config.yaml').pipeline()
