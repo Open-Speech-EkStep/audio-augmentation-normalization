@@ -47,8 +47,8 @@ class Pipeline:
             print('Folder %s exists' % output_folder_path)
             exit()
         os.makedirs(output_folder_path)
-        for audio in audio_files:
-            normalized_audio = AudioNormalization(audio).loudness_normalization()
+        for audio in tqdm(audio_files):
+            normalized_audio = AudioNormalization(audio).loudness_normalization_effects()
             output_file_name = (output_folder_path + '/' +
                                 audio.split('/')[-1])
             normalized_audio.export(output_file_name, format='wav')
