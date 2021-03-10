@@ -26,6 +26,12 @@ class AudioAugmentation:
         mixed_audio = wav_file.overlay(clipped_noise)
         return mixed_audio
 
+    def speed_change(self, speed=1.0):
+        wav_file = AudioSegment.from_file(file=self.audio_file, format='wav')
+        sound_with_altered_frame_rate = wav_file._spawn(wav_file.raw_data, overrides={
+            "frame_rate": int(wav_file.frame_rate * speed)
+        })
+        return sound_with_altered_frame_rate.set_frame_rate(wav_file.frame_rate)
+
     def save_audio_file(self, audio, file_path):
-        audio.export(out_f=file_path,
-                     format="wav")
+        audio.export(out_f=file_path, format="wav")

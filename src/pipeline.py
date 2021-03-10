@@ -32,6 +32,28 @@ class Pipeline:
                                   '_vol_down_' + str(gain * -1))
             return output_folder_name
 
+    def modified_speed_perturb_folder_name(self, audio_input_path, audio_dump_path, speed):
+        output_folder_name = (audio_dump_path + '/' +
+                              audio_input_path.split('/')[-1] +
+                              '_speed_perturbed_' + str(speed))
+        return output_folder_name
+
+    def perturb_speed(self, config_parameters):
+        input_audio_path = self.rectify_audio_path(config_parameters['data']['audio_path'])
+        audio_dump_path = self.rectify_audio_path(config_parameters['data']['audio_dump_path'])
+        speed = config_parameters['operations']['speed']
+        audio_files = glob.glob(input_audio_path + '/*.wav')
+        output_folder_path = self.modified_speed_perturb_folder_name(input_audio_path, audio_dump_path, speed)
+        if os.path.isdir(output_folder_path):
+            print('Folder %s exists' % output_folder_path)
+            exit()
+        os.makedirs(output_folder_path)
+        for audio in tqdm(audio_files):
+            speed_modified_audio = AudioAugmentation(audio).speed_change(speed=speed)
+            output_file_name = (output_folder_path + '/' +
+                                audio.split('/')[-1])
+            speed_modified_audio.export(output_file_name, format='wav')
+
     def modify_volume(self, input_audio_path, gain, output_folder_path):
         audio_files = glob.glob(input_audio_path + '/*.wav')
         for audio in audio_files:
@@ -131,6 +153,10 @@ class Pipeline:
             self.check_background_noise_audios(config_parameters)
             print('Adding Noise')
             self.add_noise(config_parameters)
+
+        if config_parameters['operations']['speed_perturb']:
+            print("Perturbating Speed")
+            self.perturb_speed(config_parameters)
 
 
 if __name__ == "__main__":
