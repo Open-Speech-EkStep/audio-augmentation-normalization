@@ -62,7 +62,9 @@ class Pipeline:
                                 audio.split('/')[-1])
             modified_audio.export(output_file_name, format='wav')
 
-    def normalize_loudness(self, input_audio_path, audio_dump_path):
+    def normalize_loudness(self, config_parameters):
+        input_audio_path = self.rectify_audio_path(config_parameters['data']['audio_path'])
+        audio_dump_path = self.rectify_audio_path(config_parameters['data']['audio_dump_path'])
         audio_files = glob.glob(input_audio_path + '/*.wav')
         output_folder_path = audio_dump_path + '/' + input_audio_path.split('/')[-1] + '_loud_norm'
         if os.path.isdir(output_folder_path):
@@ -86,9 +88,8 @@ class Pipeline:
             self.modify_volume(input_audio_path, gain, output_folder_name)
 
     def check_background_noise_audios(self, config_parameters):
-        noise_path = config_parameters['data']['background_noise_path']
+        noise_path = self.rectify_audio_path(config_parameters['data']['background_noise_path'])
         probabilities = config_parameters['data']['noise_probabilities']
-        noise_path = self.rectify_audio_path(noise_path)
         if not os.path.isdir(noise_path):
             print("Error: Incorrect path for background noises. Folder does not exist")
             exit()
@@ -146,8 +147,7 @@ class Pipeline:
 
         if config_parameters['operations']['loudness_normalization']:
             print("Normalizing volume")
-            audio_path = config_parameters['data']['path_for_loudness_normalization']
-            self.normalize_loudness(audio_path, audio_dump_path)
+            self.normalize_loudness(config_parameters)
 
         if config_parameters['operations']['add_background_noise']:
             self.check_background_noise_audios(config_parameters)
