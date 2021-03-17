@@ -1,4 +1,4 @@
-## Data Augmentation and Normalization 
+## Audio Augmentation and Normalization 
 
 Pipeline to augment data and perform loudness normalization. 
 
